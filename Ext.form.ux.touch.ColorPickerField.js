@@ -21,9 +21,7 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 	renderTpl: null,
 	otherCls: "",
 	displaySlot: "color",
-	
-	//colors: ["#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#000000"],
-	
+
 	colors : [
 		'000000', '993300', '333300', '003300', '003366', '000080', '333399', '333333',
 		'800000', 'FF6600', '808000', '008000', '008080', '0000FF', '666699', '808080',
@@ -39,9 +37,9 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 		this.addEvents(
 			'select'
 		);
-		
+
 		this.useMask = true;
-		
+
 		var renderTpl = [
 			'<tpl if="label">',
 				'<div class="x-form-label"><span>{label}</span></div>',
@@ -56,30 +54,30 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 				'<tpl if="useClearIcon"><div class="x-field-clear-container"><div class="x-field-clear x-hidden-visibility">&#215;</div></div></tpl>',
 			'</tpl>'
 		];
-		
+
 		this.renderTpl = this.renderTpl || renderTpl;
-		
+
 		Ext.form.ux.touch.ColorPickerField.superclass.initComponent.apply(this, arguments);
-		
+
 		this.makePicker();
 	},
-	
+
 	makePicker: function() {
 		var data = this.makeColors();
-		
+
 		var colorSlot = {
 			name: "color",
 			title: "Color",
 			data: data
 		};
-		
+
 		var colorPicker = {
 			slots : [colorSlot]
 		};
-		
+
 		this.picker = colorPicker;
 	},
-	
+
 	makeColors: function() {
 		var tpl = new Ext.Template(
 			"<div style='background-color: #{color}; width: 75%; height: 2em; margin: .25em auto; border: 3px solid #000;'>&nbsp;</div>",
@@ -87,10 +85,10 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 				compiled: true,
 			}
 		);
-		
+
 		var data = [];
 		var colors = this.colors;
-		
+
 		for (var i = 0; i < colors.length; i++) {
 			var color = colors[i];
 			var obj = {
@@ -101,7 +99,7 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 		}
 		return data;
 	},
-	
+
     getPicker: function() {
         if (!this.fieldPicker) {
             if (this.picker instanceof Ext.Picker) {
@@ -109,8 +107,10 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
             } else {
                 this.fieldPicker = new Ext.Picker(Ext.apply(this.picker || {}));
             }
-
-            this.fieldPicker.setValue(this.value || null);
+			
+			var value = { color: this.value };
+			
+            this.fieldPicker.setValue(value);
 
             this.fieldPicker.on({
                 scope : this,
@@ -142,15 +142,16 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
     },
 
     setValue: function(value, animated) {
-		if (typeof value !== "object") {
-			return value;
-		}
-		var name;
-		for (name in value) {
-			this.value = value[name];
+		if (typeof value === "string") {
+			this.value = value;
+		} else {
+			var name;
+			for (name in value) {
+				this.value = value[name];
+			}
 		}
 
-        if (this.rendered) {
+        if (this.rendered && value !== "") {
 			var text = this.getText();
 			text = text.replace(" margin: .25em auto;", "");
 			this.fieldEl.dom.innerHTML = text;
@@ -158,7 +159,7 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
         
         return this;
     },
-	
+
 	getText: function() {
 		var picker = this.picker;
 		var slots = picker.slots;
@@ -167,9 +168,9 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 		if (value === null) {
 			return null;
 		}
-		
+
 		var name = this.displaySlot;
-		
+
 		for (var i = 0; i < slots.length; i++) {
 			var tmpSlot = slots[i];
 			if (tmpSlot.name === name) {
@@ -185,13 +186,13 @@ Ext.form.ux.touch.ColorPickerField = Ext.extend(Ext.form.Field, {
 				break ;
 			}
 		}
-		
+
 		return text;
 	},
     
 	getValue: function() {
 		var value = this.value || null;
-		
+
 		return value;
 	},
     
